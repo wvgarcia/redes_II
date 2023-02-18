@@ -1,0 +1,32 @@
+
+
+
+Router>enable
+Router#configure t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Router(config)#interface fa0/0
+Router(config-if)#ip address 192.168.1.1 255.255.255.0
+Router(config-if)#no shutdown
+
+
+
+El Router 0 es el DCE, por eso lo configuramos así
+ 
+Router#en
+Router#config t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Router(config)#interface se0/2
+Router(config-if)#ip address 10.0.0.1 255.255.255.252
+Router(config-if)#no shutdown  
+ 
+﻿
+ 
+ 
+Router>en
+Router#config t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Router(config)#int se0/0
+Router(config-if)#ip address 10.0.0.2 255.255.255.252
+Router(config-if)#clock rate 56000
+Router(config-if)#no shut 
+El clock rate se pone porque el router1 establece el tiempo de reloj. Router 0 es DCE y Router1 es DTE 
