@@ -1,0 +1,66 @@
+
+
+VLAN
+Switch-troncal> enable 
+Switch-troncal# configure terminal
+Switch-troncal(config)# vlan 10
+Switch-troncal(config-vlan)# name administración
+Switch-troncal(config-vlan)# exit 
+Switch-troncal(config)# vlan 20
+Switch-troncal(config-vlan)# name profesores
+Switch-troncal(config-vlan)# exit 
+Switch-troncal(config)# vlan 30
+Switch-troncal(config-vlan)# name alumnos
+Switch-troncal(config-vlan)# exit 
+
+
+Definimos como puertos trunk los cuatro del switch troncal:
+
+Switch-troncal(config)# interface range g0/0 -3
+Switch-troncal(config-if-range)# switchport
+Switch-troncal(config-if-range)# switchport mode trunk 
+Switch-troncal(config-if-range)# switchport trunk native vlan 10
+Switch-troncal(config-if-range)# switchport trunk allowed vlan 10,20,30
+Switch-troncal(config-if-range)# exit
+Ahora habría que definir en cada switch de acceso qué rango de puertos dedicamos a cada VLAN. Vamos a suponer que se utilizan las interfaces f0/0-15 para la vlan administración, f0/16,31 para vlan profesores y f0/32-47 para la vlan alumnos.
+
+Switch-1(config)# interface range f0/0 -15
+Switch-1(config-if-range)# switchport
+Switch-1(config-if-range)# switchport mode access
+Switch-1(config-if-range)# switchport  access vlan 10
+Switch-1(config-if-range)# exit
+Switch-1(config)# interface range f0/16 -31
+Switch-1(config-if-range)# switchport
+Switch-1(config-if-range)# switchport mode access
+Switch-1(config-if-range)# switchport  access vlan 20
+Switch-1(config-if-range)# exit
+Switch-1(config)# interface range f0/32 -47
+Switch-1(config-if-range)# switchport
+Switch-1(config-if-range)# switchport mode access
+Switch-1(config-if-range)# switchport  access vlan 30
+Switch-1(config-if-range)# exit
+Definimos como trunk el puerto que conecta cada switch de acceso con el troncal:
+
+Switch-1(config)# interface g0/0
+Switch-1(config-if)# switchport
+Switch-1(config-if)# switchport mode trunk
+Switch-1(config-if)# switchport trunk native vlan 10
+Switch-1(config-if)# switchport trunk allowed vlan 10,20,30
+Switch-1(config-if)# exit
+En el router creamos una subinterfaz por cada VLAN transportada en el enlace trunk:
+
+Router(config)# interface f2
+Router(config-if)# no ip address
+Router(config-if)# exit 
+Router(config)# interface f2.1
+Router(config-if)# encapsulation dot1q 10
+Router(config-if)# ip address 172.16.10.1 255.255.255.0
+Router(config-if)# exit 
+Router(config)# interface f2.2
+Router(config-if)# encapsulation dot1q 20
+Router(config-if)# ip address 172.16.20.1 255.255.255.0
+Router(config-if)# exit 
+Router(config)# interface f2.3
+Router(config-if)# encapsulation dot1q 30
+Router(config-if)# ip address 172.16.30.1 255.255.255.0
+Router(config-if)# exit 
