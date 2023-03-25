@@ -1,0 +1,49 @@
+
+
+NAT ESTATICO PRACTICA
+
+access-list 1 permit 192.168.0.0 0.255.255.255
+ip nat inside source list 1 interface Serial 0/3/0
+
+ingreso
+Router(config)#int
+Router(config)#interface fa0/0
+Router(config-if)#ip nat
+Router(config-if)#ip nat ins
+Router(config-if)#ip nat inside
+
+salida
+
+Router(config)#interface se0/3/0
+Router(config-if)#ip nat out
+Router(config-if)#ip nat outside 
+Router(config-if)#exit
+
+
+NAT dinamica
+
+Router(config)#ip nat pool rango1 20.1.1.3 20.1.1.100 netmask 255.0.0.0
+Router(config)#access-list 2 permit 192.168.11.0 0.255.255.255
+Router(config)#ip nat inside source list 2 pool rango1
+
+ingreso nat dinamica
+
+Router(config)#interface fa0/0
+Router(config-if)#ip nat inside
+Router(config-if)#exit
+
+salida nat dinamico
+Router(config)#int se0/3/1
+Router(config-if)#ip nat outside
+Router(config-if)#exit
+
+pruebas
+
+Router2#sh ip nat translations
+
+
+
+
+
+
+
