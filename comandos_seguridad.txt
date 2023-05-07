@@ -1,0 +1,84 @@
+
+
+-- Práctica de seguridad 
+-- configurando nombre del router.
+Router(config)#hostname RT-SEGURO
+-- encriptar todos los password que se creen en el RT-SEGURO
+RT-SEGURO(config)#service password-encryption
+-- crear password general
+RT-SEGURO(config)#line console 0
+RT-SEGURO(config-line)#pass
+RT-SEGURO(config-line)#password redes
+RT-SEGURO(config-line)#login
+RT-SEGURO(config-line)#exit
+-- crear password para ingresar a la configuración
+RT-SEGURO(config)#enable secret ing-redes
+-- validar password
+-- mostrar config
+RT-SEGURO#show running-config
+-- desencriptar password
+https://cisco-type-7-password-cracker.goffinet.org/
+-- por lo tanto no se recomienda password general
+-- creando usuarios en el router.
+RT-SEGURO(config)#line console 0
+RT-SEGURO(config-line)#no password 
+RT-SEGURO(config-line)#no login
+-- permitiendo el login por medio de usuarios
+RT-SEGURO(config)#line console 0
+RT-SEGURO(config-line)#login local
+RT-SEGURO(config-line)#exit
+
+RT-SEGURO(config)#username system1 ?
+  password   Specify the password for the user
+  privilege  Set user privilege level
+  secret     Specify the secret for the user
+  <cr>
+RT-SEGURO(config)#username system1
+RT-SEGURO(config)#username system1 secret system1_123
+-- usuario con privilegio administrador
+RT-SEGURO(config)#username admin privilege 15 secret adm_123 
+-- usuario sin privilegios de admin
+RT-SEGURO(config)#username system2 privilege 5 secret system2_123
+-- demo de acceso... 
+--luego habilitar maximo de caracteres para el password
+RT-SEGURO(config)#security passwords min-length 10
+RT-SEGURO(config)#username system3 secret system3
+% Password too short - must be at least 10 characters. Password not configured.
+RT-SEGURO(config)#username system3 secret system3_123456 (tien full acces)
+-- agregar limite de tiempo para la sesión en la consola
+RT-SEGURO(config)#line console 0
+RT-SEGURO(config-line)#exe
+RT-SEGURO(config-line)#exec-timeout 1
+-- configurando la interfaz gateway
+RT-SEGURO(config)#inter fa 0/0
+RT-SEGURO(config-if)#ip address 192.168.10.1 255.255.255.0
+RT-SEGURO(config-if)#no shut
+RT-SEGURO(config-if)#no shutdown 
+-- habilitando telnet
+RT-SEGURO(config)#line vty 0 4
+RT-SEGURO(config-line)#transpor
+RT-SEGURO(config-line)#transport input
+RT-SEGURO(config-line)#transport input tel
+RT-SEGURO(config-line)#transport input telnet
+-- se habilitan los mismos usuarios locales para telnet
+RT-SEGURO(config-line)#login local
+RT-SEGURO(config-line)#exec
+RT-SEGURO(config-line)#exec-timeout 1
+-- politica de seguridad bloquear el login por 1min despues de 3 intentos fallidos en un lapso de 30 segundos.
+RT-SEGURO(config)#login block-for 60 attempts 3 wi
+RT-SEGURO(config)#login block-for 60 attempts 3 within 30 (solo para acceso remoto)
+-- demo conexion telnet y validar los intentos.
+[Connection to 192.168.10.1 closed by foreign host]
+C:\>telnet 192.168.10.1
+Trying 192.168.10.1 ...
+% Connection refused by remote host
+-- habilitar log sobre los login
+RT-SEGURO(config)#login on-failure log
+-- luego demos sobre el comando show
+RT-SEGURO#show login failures 
+RT-SEGURO#show arp
+RT-SEGURO#show login
+RT-SEGURO#show user
+RT-SEGURO#show ip interface brief
+
+
