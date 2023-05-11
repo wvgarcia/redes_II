@@ -1,0 +1,82 @@
+
+--Adaptive Security Appliance
+
+Router(config)#hostname Internet
+Internet(config)#inter
+Internet(config)#interface gi
+Internet(config)#interface gigabitEthernet 0/0
+Internet(config-if)#ip add
+Internet(config-if)#ip address 8.8.8.1 255.255.255.0
+Internet(config-if)#no shut
+Internet(config-if)#no shutdown
+
+Internet(config)#inter gi 0/1
+Internet(config-if)#ip add
+Internet(config-if)#ip address 10.1.1.2 255.255.255.252
+Internet(config-if)#no shut
+Internet(config-if)#no shutdown 
+
+
+-- ASA
+ciscoasa(config)#interface GigabitEthernet1/2
+ciscoasa(config-if)#ip address 10.1.1.1 255.0.0.0
+ciscoasa(config-if)#ip address 10.1.1.1 255.255.255.252
+ciscoasa(config-if)#no shutdown
+
+ciscoasa#config terminal
+ciscoasa(config)#hostname ASA
+ASA#
+ASA(config)#enable password cisco
+
+ASA(config)#int g 1/2
+ASA(config-if)#name
+ASA(config-if)#nameif outside
+INFO: Security level for "outside" set to 0 by default.
+ASA(config-if)#secu
+ASA(config-if)#security-level 0
+
+
+ASA(config)#inter gi 1/1
+ASA(config-if)#ip addre
+ASA(config-if)#ip address 192.168.10.1 255.255.255.0
+ASA(config-if)#name
+ASA(config-if)#nameif inside
+INFO: Security level for "inside" set to 100 by default.
+ASA(config-if)#secur
+ASA(config-if)#security-level 100
+ASA(config-if)#no shut
+ASA(config-if)#no shutdown 
+
+-- configuramos ips estaticas en las pcs
+-- luego ingresamos al ASA
+ASA(config)#route outside 0.0.0.0 0.0.0.0 10.1.1.2
+ASA(config)#object network INSIDE-NET
+ASA(config-network-object)#subnet 192.168.10.0 255.255.255.0
+ASA(config-network-object)#nat (inside,outside) dynamic interface 
+ASA(config)#class-map inspection_default
+ASA(config-cmap)#
+ASA(config-cmap)#match default-inspection-traffic
+-- agregando politica de red en el firewall
+ASA(config)#policy-map global_policy
+ASA(config-pmap)#class inspection_default
+ASA(config-pmap-c)#inspect icmp
+ASA(config-pmap-c)#exit
+ASA(config)#
+ASA(config)#service-policy global_policy global
+ping desde una maquina 
+desde el browser da error.
+ASA(config)#policy-map global_policy
+ASA(config-pmap)#class inspec
+ASA(config-pmap)#class inspection_default
+ASA(config-pmap-c)#inspect http
+-- ping a www.redes.com no funciona porque no tiene el dns habilitado.
+ASA(config)#policy-map global_policy
+ASA(config-pmap)#class inspec
+ASA(config-pmap)#class inspection_default
+ASA(config-pmap-c)#inspect dns
+ASA(config-pmap-c)#exit
+
+
+
+
+
